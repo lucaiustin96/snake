@@ -21,7 +21,7 @@ int height = 25,
     viteza = 0;
 bool game = 1;
 struct jucatori{
-    char nume[100];
+    char info[100];
     int scor = 0;
 }jucatori[10];
 struct sarpe{
@@ -287,6 +287,42 @@ void UtilizatorNou(int scor)
     cin.get(nume, 100);
     file << nume << '\n';
 }
+int ReturneazaScor(char jucator[100])
+{
+    int i, nr = 0;
+    char numar[20];
+    i = strlen(jucator);
+    i--;
+    while(jucator[i] != ' ')
+        i--;
+    strcpy(jucator, jucator+i+1);
+    for(i = 0;i < strlen(jucator); i++)
+        nr = nr * 10 + jucator[i] - '0';
+    return nr;
+}
+void SortareJucatori()
+{
+    int njucatori = 0, gasit = 0, i;
+    char citeste[100];
+    file.seekg (0, ios::beg);
+    while(file.getline(citeste, 100))
+    {
+        strcpy(jucatori[njucatori].info,citeste);
+        jucatori[njucatori].scor = ReturneazaScor(citeste);
+        njucatori++;
+    }
+}
+void AfisareJucatori()
+{
+    int i = 0;
+    system("cls");
+    file.seekg (0, ios::beg);
+    while(file.getline(jucatori[i].info, 100))
+    {
+        cout << i+1 << ". " << jucatori[i].info << '\n';
+        i++;
+    }
+}
 void Menu()
 {
     system("cls");
@@ -304,9 +340,6 @@ void Menu()
     {
         case '1':       //UTILIZATOR NOU
             system("cls");
-            Input();
-            if(dir == 'e')
-                game = 0;
             while(game)
             {
                 Input();
@@ -332,13 +365,7 @@ void Menu()
            }
         break;
         case '2':              //CLASAMENT
-            system("cls");
-            file.seekg (0, ios::beg);
-            while(file.getline(jucatori[i].nume, 100))
-            {
-                cout << i+1 << ". " << jucatori[i].nume << '\n';
-                i++;
-            }
+            AfisareJucatori();
         break;
         case '3':           //HELP
             system("cls");
@@ -348,7 +375,7 @@ void Menu()
             cout<<"-> S pentru a se deplasa in jos"<<'\n';
             cout<<"-> A pentru a se deplasa la stanga"<< '\n';
             cout<<"-> D pentru a se deplasa la dreapta" << '\n';
-            cout << "Apasa 1 pentru a reveni la meniu" << '\n';
+            cout << "1. Menu" << '\n';
             cin >> alege;
             if(alege == '1')
             {
