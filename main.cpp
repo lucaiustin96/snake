@@ -17,7 +17,10 @@ int height = 20,
     dist,               //lungimea traseului
     capsarpeint,
     scor,
-    viteza = 0;
+    viteza = 0,
+    scormax = 0,
+    tipdejoc = 2,
+    lungimecoada = -1;
 bool game = 1;
 struct jucatori{
     char info[100];
@@ -153,6 +156,7 @@ void SarpeInteligent()
         //crestem lungimea cozii si adaugam un fruct nou
         lsarpeint++;
         FructNou();
+        viteza = 0;
     }
     capsarpeint++;
 }
@@ -213,7 +217,11 @@ void Sarpe()
     {
         scor = scor + 10;
         FructNou();
-        lcoada++;
+        if(lungimecoada == -1)
+            lcoada++;
+        else
+            lcoada = lungimecoada;
+        viteza = 1;
     }
 }
 void Input()
@@ -248,9 +256,15 @@ void Play()
                             cout << "-";
                         }
         }
+        if(i == 1)
+            cout << "       W";
+        if(i == 2)
+            cout << "   A       D";
+        if(i == 3)
+            cout << "       S";
     cout << '\n';
     }
-    cout << "scor: " << scor;
+    cout << "scor: " << scor <<" scorul maxim: " << scormax;
 }
 void Initializare()
 {
@@ -271,7 +285,7 @@ void Initializare()
     y = width/2;
     lcoada = 0;
     matrice[x][y] = 2;
-    matricelee[x][y] = 2;
+    matricelee[x][y] = -1;
     //genereaza pozitia de plecare a sarpelui inteligent
     pi.x = rand() % height;
     pi.y = rand() % width;
@@ -311,17 +325,19 @@ void SortareJucatori(char nume[50], char prenume[50], int scor)
     if(cscor == 0)
         strcat(jucatori[njucatori].info, "0");
     else
-    while(cscor != 0)
     {
-        ci = cscor % 10;
-        cscor = cscor / 10;
-        sirnou[nrcifre] = ci + '0';
-        nrcifre++;
+        while(cscor != 0)
+        {
+            ci = cscor % 10;
+            cscor = cscor / 10;
+            sirnou[nrcifre] = ci + '0';
+            nrcifre++;
+        }
+        strrev(sirnou);
+        strcpy(sirnou, sirnou+1);
+        strcat(jucatori[njucatori].info, sirnou);
+        jucatori[njucatori].scor = scor;
     }
-    strrev(sirnou);
-    strcpy(sirnou, sirnou+1);
-    strcat(jucatori[njucatori].info, sirnou);
-    jucatori[njucatori].scor = scor;
     njucatori++;
     while(gasit == 0)
 
@@ -354,8 +370,17 @@ void AfisareJucatori()
     }
     fin.close();
 }
+int ScorMaxim()
+{
+    std::ifstream fin("tabel.txt");
+    char jucator[100];
+    fin.getline(jucator, 100);
+    fin.close();
+    return ReturneazaScor(jucator);
+}
 void Menu()
 {
+    game = 1;
     system("cls");
     int i = 0, paritate = 0;
     char nume[100], prenume[100];
@@ -372,6 +397,9 @@ void Menu()
     {
         case '1':       //JOC NOU
             system("cls");
+            if(ScorMaxim() > 0)
+                scormax = ScorMaxim();
+            else scormax = 0;
             while(game)
             {
                 Input();
@@ -390,7 +418,8 @@ void Menu()
                         Sarpe();
                     break;
                 }
-                SarpeInteligent();
+                if(tipdejoc == 2)
+                    SarpeInteligent();
                 Play();
                 Sleep(40);
                 system("cls");
@@ -404,6 +433,12 @@ void Menu()
         break;
         case '2':              //CLASAMENT
             AfisareJucatori();
+            cout << '\n' << "1. Menu" << '\n';
+            cin >> alege;
+            if(alege == '1')
+            {
+                Menu();
+            }
         break;
         case '3':           //HELP
             system("cls");
@@ -423,7 +458,7 @@ void Menu()
         case '4':       //SETARI
             system("cls");
             cout << "Pagina Setari"<<'\n';
-            cout << "1. Meniu | 2. Viteza" << '\n';
+            cout << "1. Meniu | 2. Viteza |3. Tip de joc | 4. Lungime Coada" << '\n';
             cin >> alege;
             if(alege == '1')
             {
@@ -435,16 +470,24 @@ void Menu()
                 cin >> viteza;
                 Menu();
             }
+            if(alege == '3')
+            {
+                cout << "1. Single Player | 2. +Sarpe Inteligent" <<'\n';
+                cin >> tipdejoc;
+                Menu();
+            }
+            if(alege == '4')
+            {
+                cout << "Cat de lunga vrei sa fie coada?" <<'\n';
+                cin >> lungimecoada;
+                Menu();
+            }
         break;
     }
 }
-void PanouControl()
+int main()
 {
     Initializare();
     Menu();
-}
-int main()
-{
-    PanouControl();
     return 0;
 }
