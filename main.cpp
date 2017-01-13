@@ -35,7 +35,7 @@ c[1000],                //coada de care se foloseste algoritmul lee
 pi,                     //pozitia initiala
 pf,                     //pozitia finala
 ver,                    //folosita la lee
-pnou;                   //flosita la lee
+pnou;                   //folosita la lee
 char dir;
 void Lee()
 {
@@ -376,6 +376,8 @@ int ScorMaxim()
     char jucator[100];
     fin.getline(jucator, 100);
     fin.close();
+    if(strlen(jucator) == 0)
+        return - 1;
     return ReturneazaScor(jucator);
 }
 void Menu()
