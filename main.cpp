@@ -5,7 +5,7 @@
 #include <conio.h>
 #include <windows.h>
 using namespace std;
-int height = 25,
+int height = 20,
     width = 40,
     matrice[100][100],
     matricelee[100][100],
@@ -279,12 +279,6 @@ void Initializare()
     capsarpeint = 0;
     FructNou();
 }
-void UtilizatorNou(int scor)
-{
-    char nume[100];
-    int nrjucatori = 0, i;
-    cin.get(nume, 100);
-}
 int ReturneazaScor(char jucator[100])
 {
     int i, nr = 0;
@@ -298,18 +292,39 @@ int ReturneazaScor(char jucator[100])
         nr = nr * 10 + jucator[i] - '0';
     return nr;
 }
-void SortareJucatori()
+void SortareJucatori(char nume[50], char prenume[50], int scor)
 {
     std::ifstream fin("tabel.txt");
-    int njucatori = 0, gasit = 0, i;
-    char citeste[100];
+    int njucatori = 0, gasit = 0, i, cscor, nrcifre = 0;
+    char citeste[100], sirnou[100], ci;
     while(fin.getline(citeste, 100))
     {
         strcpy(jucatori[njucatori].info,citeste);
         jucatori[njucatori].scor = ReturneazaScor(citeste);
         njucatori++;
     }
+    strcpy(jucatori[njucatori].info, nume);
+    strcat(jucatori[njucatori].info, " ");
+    strcat(jucatori[njucatori].info, prenume);
+    strcat(jucatori[njucatori].info, " ");
+    cscor = scor;
+    if(cscor == 0)
+        strcat(jucatori[njucatori].info, "0");
+    else
+    while(cscor != 0)
+    {
+        ci = cscor % 10;
+        cscor = cscor / 10;
+        sirnou[nrcifre] = ci + '0';
+        nrcifre++;
+    }
+    strrev(sirnou);
+    strcpy(sirnou, sirnou+1);
+    strcat(jucatori[njucatori].info, sirnou);
+    jucatori[njucatori].scor = scor;
+    njucatori++;
     while(gasit == 0)
+
     {
         gasit = 1;
         for(i = 0;i < njucatori-1; i++)
@@ -343,6 +358,7 @@ void Menu()
 {
     system("cls");
     int i = 0, paritate = 0;
+    char nume[100], prenume[100];
     cout << '\n';
     cout <<"           MENIU" << '\n';
     cout << '\n';
@@ -354,7 +370,7 @@ void Menu()
     cin >> alege;
     switch(alege)
     {
-        case '1':       //UTILIZATOR NOU
+        case '1':       //JOC NOU
             system("cls");
             while(game)
             {
@@ -376,12 +392,17 @@ void Menu()
                 }
                 SarpeInteligent();
                 Play();
-                Sleep(60);
+                Sleep(40);
                 system("cls");
            }
+            if(game == 0)
+            {
+                cout << "Nume: "; cin >> nume;
+                cout << "Prenume: "; cin >> prenume;
+                SortareJucatori(nume, prenume, scor);
+            }
         break;
         case '2':              //CLASAMENT
-            SortareJucatori();
             AfisareJucatori();
         break;
         case '3':           //HELP
