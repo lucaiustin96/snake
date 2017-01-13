@@ -1,2 +1,2 @@
 # snake
-Nii eu, nici colega mea nu am mai facut joculete pana acum. Momentan incercam sa aflam mai multe despre cum putem implementa jocul.
+Baza jocului o reprezinta o matrice care contine valorile: 0 pentru spatiu, -1 pentru perete, 2 pentru sarpele controlat de noi, 3 pentru fruct si 4 pentru sarpele inteligent. Matricea este stearsa si apoi rescrisa la fiecare schimbare a directiei de deplasare a sarpelui. Ne folosim de un fisier .txt pentru a memora numele si scorul celor mai buni jucatori.
