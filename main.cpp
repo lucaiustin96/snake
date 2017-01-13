@@ -5,7 +5,6 @@
 #include <conio.h>
 #include <windows.h>
 using namespace std;
-fstream file("tabel.txt", std::fstream::in | std::fstream::out | std::fstream::app);
 int height = 25,
     width = 40,
     matrice[100][100],
@@ -23,7 +22,7 @@ bool game = 1;
 struct jucatori{
     char info[100];
     int scor = 0;
-}jucatori[10];
+}jucatori[10], aux;
 struct sarpe{
     int x, y;
 }sarpe[1000],           //coadaa sarpelui controlat de noi
@@ -285,7 +284,6 @@ void UtilizatorNou(int scor)
     char nume[100];
     int nrjucatori = 0, i;
     cin.get(nume, 100);
-    file << nume << '\n';
 }
 int ReturneazaScor(char jucator[100])
 {
@@ -302,26 +300,44 @@ int ReturneazaScor(char jucator[100])
 }
 void SortareJucatori()
 {
+    std::ifstream fin("tabel.txt");
     int njucatori = 0, gasit = 0, i;
     char citeste[100];
-    file.seekg (0, ios::beg);
-    while(file.getline(citeste, 100))
+    while(fin.getline(citeste, 100))
     {
         strcpy(jucatori[njucatori].info,citeste);
         jucatori[njucatori].scor = ReturneazaScor(citeste);
         njucatori++;
     }
+    while(gasit == 0)
+    {
+        gasit = 1;
+        for(i = 0;i < njucatori-1; i++)
+            if(jucatori[i].scor < jucatori[i+1].scor)
+            {
+               aux = jucatori[i];
+               jucatori[i] = jucatori[i+1];
+               jucatori[i+1] = aux;
+               gasit = 0;
+            }
+    }
+    fin.close();
+    std::ofstream fout ("tabel.txt", std::ios::out | std::ios::trunc);
+    for(i = 0;i < njucatori; i++)
+        fout << jucatori[i].info << '\n';
+    fout.close ();
 }
 void AfisareJucatori()
 {
     int i = 0;
     system("cls");
-    file.seekg (0, ios::beg);
-    while(file.getline(jucatori[i].info, 100))
+    std::ifstream fin("tabel.txt");
+    while(fin.getline(jucatori[i].info, 100))
     {
         cout << i+1 << ". " << jucatori[i].info << '\n';
         i++;
     }
+    fin.close();
 }
 void Menu()
 {
@@ -365,6 +381,7 @@ void Menu()
            }
         break;
         case '2':              //CLASAMENT
+            SortareJucatori();
             AfisareJucatori();
         break;
         case '3':           //HELP
